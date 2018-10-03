@@ -23,7 +23,7 @@ const wss = new SocketServer({ server });
 // Set broadcast function;
 wss.broadcast = data => {
   wss.clients.forEach(client => {
-    if (client.readyState) {
+    if (client.readyState === WebSocket.OPEN) {
       client.send(data);
     }
   })
@@ -38,7 +38,7 @@ wss.on('connection', (ws) => {
   // Generate and send a random unique color for each new client.
   const userColor = {
     type: 'setColor',
-    color: uniqueColor(usedColors)
+    color: uniqueColor(usedColors),
   }
   usedColors.push(userColor.color);
   ws.send(JSON.stringify(userColor));
@@ -46,7 +46,7 @@ wss.on('connection', (ws) => {
   // Broadcast user count
   const userCount = {
     type: 'updateCount',
-    count: wss.clients.size
+    count: wss.clients.size,
   }
   wss.broadcast(JSON.stringify(userCount));
 
